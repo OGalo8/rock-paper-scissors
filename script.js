@@ -8,13 +8,13 @@ function getChoice(num) {
   let decision;
   switch (num) {
     case 1:
-      decision = "Rock";
+      decision = "rock";
       break;
     case 2:
-      decision = "Paper";
+      decision = "paper";
       break;
     case 3:
-      decision = "Scissors";
+      decision = "scissors";
       break;
     default:
       decision = "Value not allowed";
@@ -28,6 +28,7 @@ let ties = 0;
 let humanScore = 0;
 let computerScore = 0;
 let winnerMessage;
+
 let compNumber = () => Math.floor(Math.random() * 3) + 1;
 
 function getComputerChoice() {
@@ -36,13 +37,10 @@ function getComputerChoice() {
 }
 
 function getHumanChoice() {
-  let promptedChoice = Number(
-    window.prompt("Enter 1 for 'Rock', 2 for 'Paper' and 3 for 'Scissors'")
-  );
-  if (![1, 2, 3].includes(promptedChoice)) {
-    throw new Error("Value not allowed. Game over.");
+  humanChoice = prompt("Write 'rock', 'paper' or 'scissors' ").toLowerCase();
+  if (!["rock", "paper", "scissors"].includes(humanChoice)) {
+    throw new Error("The value you entered is not allowed. Game over.");
   }
-  humanChoice = getChoice(promptedChoice);
   log(`You chose: ${humanChoice}`);
 }
 
@@ -51,31 +49,45 @@ function compareResults(cc, hc) {
     ties++;
     return (winnerMessage = "This round ends in a tie.");
   } else if (
-    (cc == "Rock" && hc == "Scissors") ||
-    (cc == "Paper" && hc == "Rock") ||
-    (cc == "Scissors" && hc == "Paper")
+    (cc == "rock" && hc == "scissors") ||
+    (cc == "paper" && hc == "rock") ||
+    (cc == "scissors" && hc == "paper")
   ) {
     computerScore++;
-    return (winnerMessage = "You lost this round");
+    return (winnerMessage = `You lose! ${cc} beats ${hc}.`);
   } else {
     humanScore++;
-    return (winnerMessage = "You win this round!");
+    return (winnerMessage = `You win! ${hc} beats ${cc}.`);
   }
 }
 
-function completeGame() {
+function playRound() {
   try {
     log("Welcome to the Rock, Paper, Scissors simulator!");
     getComputerChoice();
     getHumanChoice();
     log(compareResults(computerChoice, humanChoice));
-    log(`The score is: Human = ${humanScore} | Computer = ${computerScore}.`);
+    log(
+      `The score is: Human = ${humanScore} | Computer = ${computerScore}. | Ties = ${ties}. `
+    );
     log("");
   } catch (error) {
     log(error.message);
   }
 }
 
-for (i = 1; i <= 5; i++) {
-  completeGame();
+function playGame() {
+  for (i = 1; i <= 5; i++) {
+    playRound();
+  }
+
+  if (computerScore == humanScore) {
+    log("The overall game ends in a tie.");
+  } else if (humanScore > computerScore) {
+    log("Congratulations! You won the overall game!");
+  } else {
+    log("Sorry, you lost the overall game.");
+  }
 }
+
+playGame(computerScore, humanScore);
