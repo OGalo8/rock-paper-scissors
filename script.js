@@ -1,10 +1,7 @@
-// A program to play rock, paper, scissors against the computer.
-
-//This shorcut will make our lives easier when printing in
-// the console
 const log = console.log;
 
-function getChoice(num) {
+// ******** logic to obtain ComputerChoice ****************
+function assignComputerAChoice(num) {
   let decision;
   switch (num) {
     case 1:
@@ -22,65 +19,85 @@ function getChoice(num) {
   return decision;
 }
 
+let compNumber = () => Math.floor(Math.random() * 3) + 1;
 let computerChoice;
-let humanChoice;
+
+let getComputerChoice = () => {
+  computerChoice = assignComputerAChoice(compNumber());
+  log(`Computer chose: ${computerChoice}`);
+};
+
+// ******** logic to obtain humanChoice ****************
 let ties = 0;
 let humanScore = 0;
 let computerScore = 0;
-let winnerMessage;
+let gamesPlayed = 0;
 
-let compNumber = () => Math.floor(Math.random() * 3) + 1;
+function getHumanChoice(callback) {
+  // The control flow will wait until callback receives humanChoice
+  let choiceButton = document.querySelector("#buttonMenu");
+  choiceButton.addEventListener("click", (e) => {
+    let target = e.target.closest("button");
 
-function getComputerChoice() {
-  computerChoice = getChoice(compNumber());
-  log(`Computer chose: ${computerChoice}`);
+    let humanChoice; // if we create humanChoice before user clicks, it will be undefined
+    if (!target) return;
+
+    switch (target.id) {
+      case "rockButton":
+        humanChoice = "rock";
+        break;
+      case "paperButton":
+        humanChoice = "paper";
+        break;
+      case "scissorsButton":
+        humanChoice = "scissors";
+        break;
+    }
+
+    callback(humanChoice);
+    getComputerChoice();
+    compareResults(computerChoice, humanChoice);
+    log(
+      `The score is: Human = ${humanScore} | Computer = ${computerScore}. | Ties = ${ties}. `
+    );
+    log("");
+    gamesPlayed++;
+  });
 }
 
-function getHumanChoice() {
-  humanChoice = prompt("Write 'rock', 'paper' or 'scissors' ").toLowerCase();
-  if (!["rock", "paper", "scissors"].includes(humanChoice)) {
-    throw new Error("The value you entered is not allowed. Game over.");
+function displayHumanChoice(choice) {
+  if (choice) {
+    log(`You chose: ${choice}`);
   }
-  log(`You chose: ${humanChoice}`);
 }
+
+// **** Logic to compare humanChoice and computerChoice
 
 function compareResults(cc, hc) {
+  let winnerMessage;
   if (cc == hc) {
     ties++;
-    return (winnerMessage = "This round ends in a tie.");
+    winnerMessage = "This round ends in a tie.";
   } else if (
     (cc == "rock" && hc == "scissors") ||
     (cc == "paper" && hc == "rock") ||
     (cc == "scissors" && hc == "paper")
   ) {
     computerScore++;
-    return (winnerMessage = `You lose! ${cc} beats ${hc}.`);
-  } else {
+    winnerMessage = `You lose! ${cc} beats ${hc}.`;
+  } else if (
+    (hc == "rock" && cc == "scissors") ||
+    (hc == "paper" && cc == "rock") ||
+    (hc == "scissors" && cc == "paper")
+  ) {
     humanScore++;
-    return (winnerMessage = `You win! ${hc} beats ${cc}.`);
+    winnerMessage = `You win! ${hc} beats ${cc}.`;
   }
+
+  log(winnerMessage);
 }
 
-function playRound() {
-  try {
-    log("Welcome to the Rock, Paper, Scissors simulator!");
-    getComputerChoice();
-    getHumanChoice();
-    log(compareResults(computerChoice, humanChoice));
-    log(
-      `The score is: Human = ${humanScore} | Computer = ${computerScore}. | Ties = ${ties}. `
-    );
-    log("");
-  } catch (error) {
-    log(error.message);
-  }
-}
-
-function playGame() {
-  for (i = 1; i <= 5; i++) {
-    playRound();
-  }
-
+function decideWinner() {
   if (computerScore == humanScore) {
     log("The overall game ends in a tie.");
   } else if (humanScore > computerScore) {
@@ -90,4 +107,10 @@ function playGame() {
   }
 }
 
-playGame(computerScore, humanScore);
+// ******** Logic to play a single round
+function playRound() {
+  log("Welcome to the Rock, Paper, Scissors simulator!");
+  getHumanChoice(displayHumanChoice);
+}
+
+playRound();
