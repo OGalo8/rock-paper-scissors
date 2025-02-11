@@ -12,5 +12,10 @@ Added the overall winner of the game as a console message.
 
 ---- \*\*\*\* ----
 Changing the UI. Now we will use buttons to play the game.
-Right now, playing a single round works well every time the user clicks on a button. All is happening inside the getHumanChoice function.
-Now I need to write the logic to play five games without the browser collapsing.
+Refactored with the help of ChatGPT. Now almost all is happening inside the getHumanChoice function, because the humanChoice variable only exists inside the function.
+But now, a lot of after-choice logic is taking place inside the playGame function.
+Also, now we can define the max number of rounds per game, and show a winner at the end.
+
+In case we want to use a "start" button for the whole game, we can use the removeEventListener module to end the interaction, and restart it with the "start" button. That logic will be added later.
+
+I also have the study the code in a more in-depth manner, because there are things that I don't completely understand (mostly, about variables scope and callback functions.)

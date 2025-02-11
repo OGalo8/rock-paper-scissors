@@ -20,28 +20,24 @@ function assignComputerAChoice(num) {
 }
 
 let compNumber = () => Math.floor(Math.random() * 3) + 1;
-let computerChoice;
 
 let getComputerChoice = () => {
-  computerChoice = assignComputerAChoice(compNumber());
-  log(`Computer chose: ${computerChoice}`);
+  let cChoice = assignComputerAChoice(compNumber());
+  log(`Computer chose: ${cChoice}`);
+  return cChoice;
 };
 
 // ******** logic to obtain humanChoice ****************
-let ties = 0;
-let humanScore = 0;
-let computerScore = 0;
-let gamesPlayed = 0;
 
-function getHumanChoice(callback) {
+function getHumanChoice(playRound) {
   // The control flow will wait until callback receives humanChoice
   let choiceButton = document.querySelector("#buttonMenu");
-  choiceButton.addEventListener("click", (e) => {
+  choiceButton.addEventListener("click", function handler(e) {
     let target = e.target.closest("button");
 
     let humanChoice; // if we create humanChoice before user clicks, it will be undefined
     if (!target) return;
-
+    log(`Game ${gamesPlayed} of ${maxGames}`);
     switch (target.id) {
       case "rockButton":
         humanChoice = "rock";
@@ -53,22 +49,17 @@ function getHumanChoice(callback) {
         humanChoice = "scissors";
         break;
     }
+    log(`You chose: ${humanChoice}`);
 
-    callback(humanChoice);
-    getComputerChoice();
-    compareResults(computerChoice, humanChoice);
-    log(
-      `The score is: Human = ${humanScore} | Computer = ${computerScore}. | Ties = ${ties}. `
-    );
-    log("");
-    gamesPlayed++;
+    playRound(humanChoice);
+
+    if (gamesPlayed > maxGames) {
+      decideWinner();
+      // choiceButton.removeEventListener("click", handler);
+    }
+
+    //STOP BEFORE THIS CLOSES OR humanChoice WILL CEASE TO EXIST
   });
-}
-
-function displayHumanChoice(choice) {
-  if (choice) {
-    log(`You chose: ${choice}`);
-  }
 }
 
 // **** Logic to compare humanChoice and computerChoice
@@ -98,6 +89,8 @@ function compareResults(cc, hc) {
 }
 
 function decideWinner() {
+  log("**********************************************");
+  log("Game Over.");
   if (computerScore == humanScore) {
     log("The overall game ends in a tie.");
   } else if (humanScore > computerScore) {
@@ -105,12 +98,35 @@ function decideWinner() {
   } else {
     log("Sorry, you lost the overall game.");
   }
+  log("**********************************************");
+  log("");
+  computerScore = 0;
+  humanScore = 0;
+  ties = 0;
+  gamesPlayed = 1;
 }
 
 // ******** Logic to play a single round
-function playRound() {
-  log("Welcome to the Rock, Paper, Scissors simulator!");
-  getHumanChoice(displayHumanChoice);
+function playRound(humanChoice) {
+  let computerChoice = getComputerChoice();
+  compareResults(computerChoice, humanChoice);
+  log(
+    `The score is: Human = ${humanScore} | Computer = ${computerScore}. | Ties = ${ties}. `
+  );
+  log("");
+
+  gamesPlayed++;
 }
 
-playRound();
+let ties = 0;
+let humanScore = 0;
+let computerScore = 0;
+let gamesPlayed = 1;
+let maxGames = 2;
+
+function playGame() {
+  log("Welcome to the Rock, Paper, Scissors simulator!");
+  getHumanChoice(playRound);
+}
+
+playGame();
