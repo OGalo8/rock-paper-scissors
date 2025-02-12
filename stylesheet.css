@@ -1,0 +1,13 @@
+body {
+  background-color: grey;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  padding: 10px;
+  margin: 5px;
+  text-align: left;
+}

@@ -6,7 +6,7 @@ let ties = 0;
 let humanScore = 0;
 let computerScore = 0;
 let gamesPlayed = 1;
-const maxGames = 2;
+const maxGames = 3;
 const separatorMessage =
   "___________________________________________________________________________";
 
@@ -15,7 +15,7 @@ const separatorMessage =
 function displayMessage(message) {
   const gameScreen = document.querySelector("#game-screen");
   let newMessage = document.createElement("p");
-  newMessage.setAttribute("style", "font-size: 12px");
+  newMessage.setAttribute("style", "font-size: 18px");
   newMessage.textContent = `${message}`;
   gameScreen.appendChild(newMessage);
 }
@@ -52,7 +52,7 @@ let getComputerChoice = () => {
 // The control flow will wait until playround receives humanChoice
 function getHumanChoice(playRound) {
   let choiceButton = document.querySelector("#buttonMenu");
-  choiceButton.addEventListener("click", function handler(e) {
+  function handler(e) {
     let target = e.target.closest("button"); //this ensures that the event will only start if we click exactly on a button.
 
     let humanChoice; // if we create humanChoice before user clicks, it will be undefined
@@ -82,9 +82,10 @@ function getHumanChoice(playRound) {
 
     if (gamesPlayed > maxGames) {
       decideWinner();
-      choiceButton.removeEventListener("click", handler(e));
+      choiceButton.removeEventListener("click", handler);
     }
-  });
+  }
+  choiceButton.addEventListener("click", handler);
 }
 
 // logic to play a single round, having defined humanChoice
@@ -143,11 +144,6 @@ function decideWinner() {
   displayMessage(overallWinnerMessage);
 
   addRestartButton();
-
-  computerScore = 0;
-  humanScore = 0;
-  ties = 0;
-  gamesPlayed = 1;
 }
 
 function addRestartButton() {
@@ -157,12 +153,31 @@ function addRestartButton() {
   restartButton.addEventListener("click", function cleanGameScreen(e) {
     let otherTarget = e.target.closest("button");
     if (!otherTarget) return;
+    //cleans gameScreen after clicking the Restart button
     gameScreen.innerHTML = "";
+    //resets variables
+    computerScore = 0;
+    humanScore = 0;
+    ties = 0;
+    gamesPlayed = 1;
+    //removes number of rounds
+    //returns functionality to the buttons (adds the event listener again)
+    playGame();
+    let actualRounds = document.querySelector("#numberOfRounds");
+    if (actualRounds) actualRounds.remove();
   });
   gameScreen.appendChild(restartButton);
+  restartButton.focus();
 }
 
 function playGame() {
+  const welcome = document.querySelector("h1");
+  let numberOfRounds = document.createElement("h5");
+  let numberOfRoundsMessage = `We will play to the best of ${maxGames} rounds.`;
+  numberOfRounds.textContent = numberOfRoundsMessage;
+  numberOfRounds.setAttribute("id", "numberOfRounds");
+  welcome.appendChild(numberOfRounds);
+
   getHumanChoice(playRound);
 }
 

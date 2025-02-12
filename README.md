@@ -16,6 +16,5 @@ Refactored with the help of ChatGPT. Now almost all is happening inside the getH
 But now, a lot of after-choice logic is taking place inside the playGame function.
 Also, now we can define the max number of rounds per game, and show a winner at the end.
 
-In case we want to use a "start" button for the whole game, we can use the removeEventListener module to end the interaction, and restart it with the "start" button. That logic will be added later.
-
-I also have the study the code in a more in-depth manner, because there are things that I don't completely understand (mostly, about variables scope and callback functions.)
+At the end of the game, we are now disabling the buttons, so no more interactions can be done (except for reseting the game).
+We now are displaying everything in the UI and not in the console. We added a restart button (with the help of ChatGPT) and it helps us to restart game variables, erase all js-created elements and reactvate button interaction after we obtain an overall winner.
