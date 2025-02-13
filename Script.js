@@ -7,17 +7,16 @@ let humanScore = 0;
 let computerScore = 0;
 let gamesPlayed = 1;
 const maxGames = 3;
-const separatorMessage =
-  "___________________________________________________________________________";
 
 // will display every result as a <p> in the HTML document.
 
-function displayMessage(message) {
-  const gameScreen = document.querySelector("#game-screen");
-  let newMessage = document.createElement("p");
-  newMessage.setAttribute("style", "font-size: 18px");
-  newMessage.textContent = `${message}`;
-  gameScreen.appendChild(newMessage);
+function displayMessage(message, selector) {
+  let screen = document.querySelector("#" + selector);
+  screen.setAttribute(
+    "style",
+    "font-size: 25px; font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"
+  );
+  screen.textContent = `${message}`;
 }
 // logic to obtain computerChoice
 function assignComputerAChoice(num) {
@@ -57,11 +56,9 @@ function getHumanChoice(playRound) {
 
     let humanChoice; // if we create humanChoice before user clicks, it will be undefined
 
-    let gamesPlayedMessage = `Game ${gamesPlayed} of ${maxGames}`;
-    displayMessage(separatorMessage);
-    displayMessage(gamesPlayedMessage);
-
     if (!target) return; //if we don't click exactly on a button, nothing will happen
+    let gamesPlayedMessage = `Round ${gamesPlayed} of ${maxGames}`;
+    displayMessage(gamesPlayedMessage, "current-round");
 
     switch (target.id) {
       case "rockButton":
@@ -127,7 +124,6 @@ function compareResults(cc, hc) {
 // after playing a defined number of rounds, we decide who is the overall game winner.
 
 function decideWinner() {
-  displayMessage(separatorMessage);
   const gameOverMessage = "GAME OVER.";
   displayMessage(gameOverMessage);
   let finalScore = `You won: ${humanScore} | Computer won: ${computerScore} | Ties: ${ties}.`;
@@ -163,21 +159,13 @@ function addRestartButton() {
     //removes number of rounds
     //returns functionality to the buttons (adds the event listener again)
     playGame();
-    let actualRounds = document.querySelector("#numberOfRounds");
-    if (actualRounds) actualRounds.remove();
+    // removes the "number of rounds" text
   });
   gameScreen.appendChild(restartButton);
   restartButton.focus();
 }
 
 function playGame() {
-  const welcome = document.querySelector("h1");
-  let numberOfRounds = document.createElement("h5");
-  let numberOfRoundsMessage = `We will play to the best of ${maxGames} rounds.`;
-  numberOfRounds.textContent = numberOfRoundsMessage;
-  numberOfRounds.setAttribute("id", "numberOfRounds");
-  welcome.appendChild(numberOfRounds);
-
   getHumanChoice(playRound);
 }
 
