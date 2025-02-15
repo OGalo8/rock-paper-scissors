@@ -94,7 +94,7 @@ function getHumanChoice(playRound) {
       playRound(humanChoice, target);
   
       if (gamesPlayed > maxGames) {
-        
+        gamesPlayed = 1;
         decideWinner();
         choiceButton.removeEventListener("click", handler);
         restartButton();
@@ -154,6 +154,7 @@ function decideWinner() {
 
 function restartButton() {
   const restartButton = document.querySelector("#restartButton");
+  setStyle(restartButton);
   restartButton.addEventListener("click", function cleanGameScreen(e) {
     let otherTarget = e.target.closest("button");
     if (!otherTarget) return;
