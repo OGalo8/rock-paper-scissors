@@ -1,4 +1,4 @@
-//A script to play a simple rock,paper,scissors game by rounds.
+//A script to play a simple Rock,Paper,Scissors game by rounds.
 
 // defining global variables
 
@@ -6,33 +6,46 @@ let ties = 0;
 let humanScore = 0;
 let computerScore = 0;
 let gamesPlayed = 1;
+let winnerMessage;
+const roundWinnerScreenSelector = document.querySelector("#roundWinnerScreen")
 const maxGames = 3;
+
 
 // will display every result as a <p> in the HTML document.
 
 function displayMessage(message, selector) {
-  let screen = document.querySelector("#" + selector);
+  let screen = document.querySelector(selector);
   screen.setAttribute(
     "style",
     "font-size: 25px; font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"
   );
-  screen.textContent = `${message}`;
+  screen.textContent = message;
 }
+
+//function to set style to some buttons
+function setStyle(chosenTarget){
+  chosenTarget.setAttribute("style", "background-color: #2E1A47; color: #FFFFFF");
+}
+
+//function to remove style to all buttons
+function removeButtonStyle(){
+  let allButtons = document.querySelectorAll("button");
+  allButtons.forEach(button => button.removeAttribute("style")); //allbuttons is a node list, so we need to apply forEach
+  }
+
 // logic to obtain computerChoice
 function assignComputerAChoice(num) {
   let decision;
   switch (num) {
     case 1:
-      decision = "rock";
+      decision = "Rock";
       break;
     case 2:
-      decision = "paper";
+      decision = "Paper";
       break;
     case 3:
-      decision = "scissors";
+      decision = "Scissors";
       break;
-    default:
-      decision = "Value not allowed";
   }
   return decision;
 }
@@ -41,8 +54,7 @@ let compNumber = () => Math.floor(Math.random() * 3) + 1;
 
 let getComputerChoice = () => {
   let cChoice = assignComputerAChoice(compNumber());
-  let computerChoiceMessage = `Computer chose: ${cChoice}`;
-  displayMessage(computerChoiceMessage);
+  displayMessage(cChoice, "#cChoiceScreen");
   return cChoice;
 };
 
@@ -50,48 +62,54 @@ let getComputerChoice = () => {
 
 // The control flow will wait until playround receives humanChoice
 function getHumanChoice(playRound) {
-  let choiceButton = document.querySelector("#buttonMenu");
-  function handler(e) {
-    let target = e.target.closest("button"); //this ensures that the event will only start if we click exactly on a button.
+    let choiceButton = document.querySelector(".firstRow");
+    function handler(e) {
+      let target = e.target.closest("button"); // This ensures that the event will only start if we click exactly on a button.
+      if (!target) return; // If we don't click exactly on a button, nothing will happen.
+  
+      // Remove purple/white style from all buttons
+      removeButtonStyle();
 
-    let humanChoice; // if we create humanChoice before user clicks, it will be undefined
+      // Set background color for the clicked button
+      setStyle(target);
 
-    if (!target) return; //if we don't click exactly on a button, nothing will happen
-    let gamesPlayedMessage = `Round ${gamesPlayed} of ${maxGames}`;
-    displayMessage(gamesPlayedMessage, "current-round");
-
-    switch (target.id) {
-      case "rockButton":
-        humanChoice = "rock";
-        break;
-      case "paperButton":
-        humanChoice = "paper";
-        break;
-      case "scissorsButton":
-        humanChoice = "scissors";
-        break;
+      // if we create humanChoice before user clicks, it will be undefined
+      let humanChoice;
+  
+      let gamesPlayedMessage = `Round ${gamesPlayed} of ${maxGames}`;
+      displayMessage(gamesPlayedMessage, "#currentRoundScreen");
+  
+      switch (target.id) {
+        case "rockButton":
+          humanChoice = "Rock";
+          break;
+        case "paperButton":
+          humanChoice = "Paper";
+          break;
+        case "scissorsButton":
+          humanChoice = "Scissors";
+          break;
+      }
+  
+      playRound(humanChoice, target);
+  
+      if (gamesPlayed > maxGames) {
+        
+        decideWinner();
+        choiceButton.removeEventListener("click", handler);
+        restartButton();
+      }
     }
-
-    let humanChoiceMessage = `You chose: ${humanChoice}`;
-    displayMessage(humanChoiceMessage);
-
-    playRound(humanChoice);
-
-    if (gamesPlayed > maxGames) {
-      decideWinner();
-      choiceButton.removeEventListener("click", handler);
-    }
+    choiceButton.addEventListener("click", handler);
   }
-  choiceButton.addEventListener("click", handler);
-}
-
+  
 // logic to play a single round, having defined humanChoice
-function playRound(humanChoice) {
+function playRound(humanChoice, target) {
   let computerChoice = getComputerChoice();
 
   compareResults(computerChoice, humanChoice);
-  let currentScore = `The score is: Human = ${humanScore} | Computer = ${computerScore}. | Ties = ${ties}. `;
-  displayMessage(currentScore);
+  displayMessage(humanScore,"#hScoreScreen");
+  displayMessage(computerScore,"#cScoreScreen");
 
   gamesPlayed++;
 }
@@ -99,74 +117,69 @@ function playRound(humanChoice) {
 // **** Logic to compare humanChoice and computerChoice and define the winner of the round
 
 function compareResults(cc, hc) {
-  let winnerMessage;
   if (cc == hc) {
     ties++;
-    winnerMessage = "This round ends in a tie.";
+    winnerMessage = "Tie";
   } else if (
-    (cc == "rock" && hc == "scissors") ||
-    (cc == "paper" && hc == "rock") ||
-    (cc == "scissors" && hc == "paper")
+    (cc == "Rock" && hc == "Scissors") ||
+    (cc == "Paper" && hc == "Rock") ||
+    (cc == "Scissors" && hc == "Paper")
   ) {
     computerScore++;
-    winnerMessage = `You lose! ${cc} beats ${hc}.`;
+    winnerMessage = "You lose";
   } else if (
-    (hc == "rock" && cc == "scissors") ||
-    (hc == "paper" && cc == "rock") ||
-    (hc == "scissors" && cc == "paper")
+    (hc == "Rock" && cc == "Scissors") ||
+    (hc == "Paper" && cc == "Rock") ||
+    (hc == "Scissors" && cc == "Paper")
   ) {
     humanScore++;
-    winnerMessage = `You win! ${hc} beats ${cc}.`;
+    winnerMessage = `You win!`;
   }
-  displayMessage(winnerMessage);
+  displayMessage(winnerMessage,"#roundWinnerScreen");
 }
 
 // after playing a defined number of rounds, we decide who is the overall game winner.
 
 function decideWinner() {
-  const gameOverMessage = "GAME OVER.";
-  displayMessage(gameOverMessage);
-  let finalScore = `You won: ${humanScore} | Computer won: ${computerScore} | Ties: ${ties}.`;
-  displayMessage(finalScore);
-
-  let overallWinnerMessage;
   if (computerScore == humanScore) {
-    overallWinnerMessage = "The overall game ends in a tie.";
+    winnerMessage = "Final result: Tie 🤝";
   } else if (humanScore > computerScore) {
-    overallWinnerMessage = "Congratulations! You won the overall game!";
+    winnerMessage = "Final result: You Win 🥳";
   } else {
-    overallWinnerMessage = "Sorry, you lost the overall game.";
+    winnerMessage = "Final result: You lose 🤫";
   }
-  displayMessage(overallWinnerMessage);
-
-  addRestartButton();
+  displayMessage(winnerMessage,"#roundWinnerScreen");
+  setStyle(roundWinnerScreenSelector);
 }
 
-function addRestartButton() {
-  const gameScreen = document.querySelector("#game-screen");
-  const restartButton = document.createElement("button");
-  restartButton.textContent = "Restart Game";
+function restartButton() {
+  const restartButton = document.querySelector("#restartButton");
   restartButton.addEventListener("click", function cleanGameScreen(e) {
     let otherTarget = e.target.closest("button");
     if (!otherTarget) return;
-    //cleans gameScreen after clicking the Restart button
-    gameScreen.innerHTML = "";
     //resets variables
     computerScore = 0;
     humanScore = 0;
     ties = 0;
     gamesPlayed = 1;
-    //removes number of rounds
+    //removes previous results and styles
+    displayMessage("","#hScoreScreen");
+    displayMessage("","#cScoreScreen");
+    displayMessage("","#cChoiceScreen");
+    displayMessage(`Round ${gamesPlayed} of ${maxGames}`,"#currentRoundScreen");
+    displayMessage("","#roundWinnerScreen");
+    removeButtonStyle();
+    roundWinnerScreenSelector.removeAttribute("style");
     //returns functionality to the buttons (adds the event listener again)
     playGame();
-    // removes the "number of rounds" text
+    // removes the event listener from restartButton
+    restartButton.removeEventListener("click", cleanGameScreen);
   });
-  gameScreen.appendChild(restartButton);
-  restartButton.focus();
 }
 
 function playGame() {
   getHumanChoice(playRound);
+
 }
 
 playGame();

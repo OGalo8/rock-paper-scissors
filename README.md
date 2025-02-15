@@ -22,3 +22,6 @@ We now are displaying everything in the UI and not in the console. We added a re
 
 ---- \*\*\*\* ----
 Added some styles and currently presenting everything in divs that look like buttons, but I think that maybe we can show the current round, current score and final score as plan text. The restart button should always be visible.
+
+---- \*\*\*\* ----
+The game has been completed. The only thing missing is that I would like it to shrink and grow proportionally, but I suposse that I don't have enough dominion of flexbox to do that yet.
